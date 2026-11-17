@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ru">
+<head>
+ <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+ <title>Royal Candy · Math Lab</title>
+ <meta name="description" content="Прогоны математики Royal Candy без графики: режимы, ставки, RTP и подтверждённые выплаты.">
+ <link rel="stylesheet" href="math-runner.css">
+</head>
+<body>
+ <header class="topbar"><a class="brand" href="./">RC<span>ROYAL CANDY <b>Math Lab</b></span></a><a href="./" class="game-link">Открыть игру ↗</a></header>
+ <main>
+  <div class="intro"><div><p class="eyebrow">БЕЗ РЕНДЕРА · ТА ЖЕ МАТЕМАТИКА</p><h1>Миллион ходов.<br><span>Один понятный результат.</span></h1><p class="lead">Выберите режимы и ставку. Считаем реальные списания, выплаты и бонусы — без анимаций и звука.</p></div><div class="session-state"><span id="status-dot"></span><div><strong id="state-label">Готов к настройке</strong><small id="session-label">Сессия ещё не открыта</small></div></div></div>
+  <div class="workspace">
+   <aside class="panel setup"><div class="panel-heading"><span class="step">01</span><h2>Параметры прогона</h2></div>
+    <form id="run-form">
+     <label>Источник математики<select id="source"><option value="server">RGS · тестовый сервер</option><option value="demo">DemoRGS · локальная демо-математика</option></select></label>
+     <p id="source-note" class="field-note">Результаты определяет сервер. Один запрос за раз; баланс и доступные ставки приходят из RGS.</p>
+     <fieldset><legend>Режимы <button id="select-all" type="button" class="text-button">Выбрать все</button></legend><div class="mode-options">
+      <label class="mode"><input type="checkbox" name="mode" value="base"><span>Normal<small>Базовая игра</small></span><b data-price="base">—</b></label>
+      <label class="mode"><input type="checkbox" name="mode" value="luck"><span>Extra Luck<small>Больше магии</small></span><b data-price="luck">—</b></label>
+      <label class="mode"><input type="checkbox" name="mode" value="enhanced"><span>Enhanced<small>Усиленные ходы</small></span><b data-price="enhanced">—</b></label>
+      <label class="mode"><input type="checkbox" name="mode" value="mayhem" checked><span>Multi Mayhem<small>Множители</small></span><b data-price="mayhem">—</b></label>
+      <label class="mode"><input type="checkbox" name="mode" value="ice"><span>Ice Bonus<small>Покупка полного бонуса</small></span><b data-price="ice">—</b></label>
+     </div></fieldset>
+     <div class="input-row"><label>Базовая ставка<input id="bet" type="number" min="0.00000001" max="1000000" step="any" value="1" list="server-bets" required><datalist id="server-bets"></datalist></label><label>Раундов на режим<input id="count" type="number" min="1" max="100000000" step="1" value="1000000" required></label></div>
+     <div class="presets"><button type="button" data-count="10000">10 000</button><button type="button" data-count="100000">100 000</button><button type="button" data-count="1000000">1 000 000</button></div>
+     <p class="field-note">Один раунд — платный ход и все его бонусы. Для Ice — одна покупка и весь бонус. Число применяется к каждому выбранному режиму.</p>
+     <details class="advanced"><summary>Воспроизводимость и скорость</summary><label>Seed выбора ходов<input id="seed" type="number" min="1" max="4294967295" step="1" value="192741"></label><label>Выбор допустимого хода<select id="policy"><option value="random">Случайный, равномерно</option><option value="first">Первый допустимый</option></select></label><label>Пауза между шагами RGS, мс<input id="delay" type="number" min="0" max="60000" value="100" step="1"></label><p class="field-note">Seed задаёт выбор ходов; в демо — также RNG игры. RNG сервера этим не задаётся. Режимы выполняются последовательно.</p></details>
+     <button id="connect" class="button secondary" type="button">Подготовить сессию</button>
+     <button id="start" class="button primary" type="submit" disabled>Начать прогон <span>↗</span></button>
+     <div class="run-controls"><button id="pause" type="button" disabled>Пауза</button><button id="stop" type="button" disabled>Завершить</button></div>
+    </form>
+   </aside>
+   <section class="results" aria-label="Результаты прогона">
+    <div id="notice" class="notice" role="status">Подготовьте сессию, чтобы получить доступные режимы и ставки.</div>
+    <div class="metric-grid"><article class="metric highlight"><p>Фактический RTP</p><strong id="rtp">—<small>%</small></strong><span>Выплаты / списания × 100</span></article><article class="metric"><p>Подтверждено ставок</p><strong id="total-cost">0</strong><span id="cost-currency">—</span></article><article class="metric"><p>Выплачено</p><strong id="total-win">0</strong><span id="net">Результат: —</span></article></div>
+    <section class="panel progress-panel"><div class="progress-head"><div><p class="eyebrow">ПРОГРЕСС</p><h2 id="progress-count">0 / 0 <span>раундов</span></h2></div><strong id="progress-percent">0%</strong></div><progress id="progress" value="0" max="1"></progress><div class="progress-meta"><span id="speed">— раундов/с</span><span id="elapsed">00:00</span><span id="eta">Осталось: —</span></div><p id="pending" class="pending" hidden></p></section>
+    <section class="panel table-panel"><div class="panel-heading"><span class="step">02</span><h2>Результаты по режимам</h2><div class="exports"><button id="export-csv" disabled>CSV ↓</button><button id="export-json" disabled>JSON ↓</button></div></div><div class="table-scroll"><table><thead><tr><th>Режим</th><th>Раунды</th><th>Списано</th><th>Выплачено</th><th>RTP</th><th>С выигрышем</th><th>Макс. выплата</th></tr></thead><tbody id="mode-results"><tr class="empty"><td colspan="7"><span>Пока нет результатов</span><small>После запуска здесь появится отдельная строка для каждого режима.</small></td></tr></tbody></table></div></section>
+    <section class="panel chart-panel"><div class="panel-heading"><span class="step">03</span><h2>Как сходится RTP</h2><span id="chart-mode">—</span></div><div id="chart-empty" class="chart-empty">График появится после первого завершённого раунда.</div><svg id="rtp-chart" viewBox="0 0 800 180" role="img" aria-label="RTP по завершённым раундам" hidden></svg><p class="field-note">Не более 202 точек на режим. История отдельных ходов не накапливается в памяти.</p></section>
+    <div class="method"><h3>Что именно считаем</h3><p>RTP включает полную стоимость выбранного режима и выплаты всех связанных бонусов. Накопленный выигрыш бонуса повторно не суммируется. Незавершённый цикл показывается отдельно и не входит в итоговый RTP.</p><p>«Пауза» ждёт ответ на текущий запрос; «Завершить» доигрывает текущий бонус. При ошибке RGS повторной ставки нет. Для продолжительного прогона оставьте страницу открытой и не допускайте сна устройства.</p><p id="math-disclaimer">Это эмпирическая оценка RTP выбранной тестовой математики и стратегии ходов.</p></div>
+   </section>
+  </div>
+ </main>
+ <footer><span>ROYAL CANDY / MATH LAB</span><span>Без PixiJS, текстур и аудио</span></footer>
+ <script type="module" src="math-runner.js"></script>
+</body>
+</html>
